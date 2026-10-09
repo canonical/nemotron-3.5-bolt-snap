@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: all help init build install upload smoke-test install-deps init-submodules download-models
+.PHONY: all help init build install upload smoke-test install-deps init-submodules download-models download-model-iq2-xxs
 
 # Always run `hf` via pipx to avoid relying on local `hf` installations.
 hf := pipx run --spec "huggingface_hub[cli]" hf
@@ -57,6 +57,14 @@ init-submodules:
 	fi
 
 # The model weights are not publicly downloadable yet.
-# Place the Eris-0000N-of-00005.gguf shards in the project root before building.
-download-models:
-	@echo "Model weights are provided locally for now, skipping download."
+# Place the shards in model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/ before building.
+# TODO: Once published, replace the check with:
+#   $(hf) download <org>/<repo> <model-name> --local-dir model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/
+download-models: download-model-iq2-xxs
+
+download-model-iq2-xxs:
+	@echo "Checking local Nemotron 3.5 Bolt IQ2_XXS model weights..."
+	@ls model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/*-00001-of-00005.gguf >/dev/null 2>&1 || { \
+		echo "Missing shards: place them in model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/"; \
+		exit 1; \
+	}

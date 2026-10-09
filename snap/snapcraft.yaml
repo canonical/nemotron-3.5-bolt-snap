@@ -32,6 +32,17 @@ environment:
   ARCH_TRIPLET: $CRAFT_ARCH_TRIPLET_BUILD_FOR
 
 parts:
+  model-weights:
+    plugin: cmake # an out-of-source plugin to reduce copies on disk
+    source: model-weights
+    override-build:
+      cp -rf --archive --link --no-dereference ${CRAFT_PART_SRC}/* ${CRAFT_PART_INSTALL}
+    organize:
+      "nemotron-3-5-bolt-iq2-xxs-gguf/*": (component/nemotron-3-5-bolt-iq2-xxs-gguf)
+    prime:
+      # Exclude everything not explicitly organized
+      - -*
+
   llamacpp-cuda:
     plugin: dump
     # Pre-downloaded from the private canonical/llama.cpp-builds-staging repo (release eris-1205f11).
@@ -47,6 +58,11 @@ parts:
       "*": (component/llamacpp-cuda)
 
 components:
+  nemotron-3-5-bolt-iq2-xxs-gguf:
+    type: standard
+    summary: Nemotron 3.5 Bolt 74B A9B IQ2_XXS GGUF
+    description: Model weights for Nemotron 3.5 Bolt 74B A9B in GGUF format, split into 5 shards
+
   llamacpp-cuda:
     type: standard
     summary: llama.cpp with CUDA backend
