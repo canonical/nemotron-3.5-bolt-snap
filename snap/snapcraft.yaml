@@ -13,7 +13,7 @@ description: |
 
   * nvidia-gpu: CUDA-enabled GPU acceleration
 
-version: 0.1.0-dev
+adopt-info: version
 
 base: core24
 grade: devel
@@ -32,6 +32,51 @@ environment:
   ARCH_TRIPLET: $CRAFT_ARCH_TRIPLET_BUILD_FOR
 
 parts:
+  version:
+    after: [cli]
+    plugin: nil
+    source: . # To regenerate the git hash on every change
+    build-packages:
+      - jq
+      - git
+    override-pull: |
+      # Do nothing. This significantly reduces build time when sourcing large files.
+    override-build: |
+      set -eo pipefail
+      cli_version=$($CRAFT_STAGE/bin/modelctl version --format=json | jq .cli --raw-output)
+      git_hash=$(git -C "$SNAPCRAFT_PROJECT_DIR" describe --always)
+      craftctl set version="${cli_version#v}+${git_hash}"
+
+  cli:
+    source:
+      - on amd64: https://github.com/canonical/inference-snaps-cli/releases/download/v2.0.0-beta.17/inference-snaps-cli-linux-amd64.tar.xz
+      - on arm64: https://github.com/canonical/inference-snaps-cli/releases/download/v2.0.0-beta.17/inference-snaps-cli-linux-arm64.tar.xz
+    plugin: dump
+    override-build: |
+      # For tab completion
+      ln --symbolic ./modelctl bin/nemotron-3-5-bolt
+
+      craftctl default
+
+  cli-lspci:
+    plugin: nil
+    stage-packages:
+      - pciutils # lspci
+
+  # Used for NVIDIA vRAM and CUDA Capability detection.
+  # Only the binary is included to avoid staging libraries, which should instead be provided by the host through the opengl interface.
+  cli-nvidia-smi:
+    plugin: nil
+    build-packages:
+      - nvidia-utils-580
+    override-build: |
+      mkdir -p $CRAFT_PART_INSTALL/usr/bin
+      cp /usr/bin/nvidia-smi $CRAFT_PART_INSTALL/usr/bin/
+
+      license_dir=$CRAFT_PART_INSTALL/usr/share/doc/nvidia-utils-580
+      mkdir -p $license_dir
+      cp /usr/share/doc/nvidia-utils-580/copyright $license_dir/
+
   model-weights:
     plugin: cmake # an out-of-source plugin to reduce copies on disk
     source: model-weights
@@ -67,6 +112,15 @@ components:
     type: standard
     summary: llama.cpp with CUDA backend
     description: LLM inference in C/C++
+
+apps:
+  nemotron-3-5-bolt:
+    command: bin/modelctl
+    completer: bin/snap-completer.bash
+    plugs:
+      - hardware-observe
+      - opengl
+      - network
 
 lint:
   ignore:
