@@ -1,0 +1,59 @@
+name: nemotron-3-5-bolt
+title: Nemotron 3.5 Bolt
+summary: Local AI with Nemotron 3.5 Bolt inference snap
+description: |
+  Nemotron-3.5-Bolt-74B-A9B-IQ2 is a large language model (LLM) compressed from Nemotron-3.5-Super-VL.
+  This model is quantized to IQ2_XXS 2.06 bits, for release of Nemotron-3.5 Bolt 74B A9B. 
+  Routed and shared MoEs experts (Fc1/Fc2) which constitute the majority of the model weights are
+  in IQ2_XSS, mamba layers are kept in NVFP4 and LM_head is in Q8_0.
+
+  Use this snap to quickly install an optimized environment for local inference with Nemotron 3.5 Bolt.
+
+  The snap includes the following hardware-optimized inference engines:
+
+  * nvidia-gpu: CUDA-enabled GPU acceleration
+
+version: 0.1.0-dev
+
+base: core24
+grade: devel
+confinement: strict
+compression: lzo
+
+assumes:
+  - snapd2.68 # for components support
+
+platforms:
+  amd64:
+  arm64:
+
+environment:
+  SNAP_COMPONENTS: /snap/$SNAP_INSTANCE_NAME/components/$SNAP_REVISION
+  ARCH_TRIPLET: $CRAFT_ARCH_TRIPLET_BUILD_FOR
+
+parts:
+  llamacpp-cuda:
+    plugin: dump
+    # Pre-downloaded from the private canonical/llama.cpp-builds-staging repo (release eris-1205f11).
+    # Switch back to the release URLs once they are publicly accessible.
+    source:
+      - on amd64: llamacpp-amd64+cuda12.tar.gz
+      - on arm64: llamacpp-arm64+cuda12.tar.gz
+    source-type: tar
+    stage-packages:
+      - libgomp1
+    organize:
+      "licenses": usr/share/doc/llama.cpp+cuda # Add licenses to the snap
+      "*": (component/llamacpp-cuda)
+
+components:
+  llamacpp-cuda:
+    type: standard
+    summary: llama.cpp with CUDA backend
+    description: LLM inference in C/C++
+
+lint:
+  ignore:
+    - metadata:
+      - license
+      - contact
