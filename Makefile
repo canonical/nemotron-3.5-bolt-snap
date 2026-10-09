@@ -5,10 +5,9 @@ SHELL := /bin/bash
 # Always run `hf` via pipx to avoid relying on local `hf` installations.
 hf := pipx run --spec "huggingface_hub[cli]" hf
 
-# TODO: Replace with snap name
-SNAP_NAME ?= gemma4 
+SNAP_NAME ?= nemotron-3-5-bolt
 
-ENGINE ?= cpu
+ENGINE ?= nvidia-gpu
 
 all: help
 
@@ -57,10 +56,7 @@ init-submodules:
 		git submodule update --init; \
 	fi
 
-# TODO: Update to match the expected model(s):
-download-models: download-model-E4B-Q4_K_M
-
-# TODO: Update to match the model. Add one target per model.
-download-model-E4B-Q4_K_M:
-	$(hf) download unsloth/gemma-4-E4B-it-GGUF gemma-4-E4B-it-Q4_K_M.gguf \
-		--local-dir model-weights/model-e4b-q4-k-m-gguf/
+# The model weights are not publicly downloadable yet.
+# Place the Eris-0000N-of-00005.gguf shards in the project root before building.
+download-models:
+	@echo "Model weights are provided locally for now, skipping download."

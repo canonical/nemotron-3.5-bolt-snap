@@ -17,8 +17,7 @@ concurrency:
 
 jobs:
   cicd:
-    # TODO: Replace with this repository's <owner>/<repo> to avoid running on forks.
-    if: github.repository == 'canonical/<inference-snap-repository>' # do not run on forks
+    if: github.repository == 'canonical/nemotron-3.5-bolt-snap' # do not run on forks
     uses: canonical/inference-snaps-dev/.github/workflows/reuse-cicd.yaml@v2
     with:
       build-runner: |
@@ -27,8 +26,7 @@ jobs:
           "ubuntu-24.04-arm"
         ]
       store-track: latest
-      # TODO: Replace with the snap name.
-      snap-name: <snap-name>
+      snap-name: nemotron-3-5-bolt
       smoke-test-engine: cpu
       smoke-test-runner: |
         [

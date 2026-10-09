@@ -11,8 +11,7 @@ jobs:
       - name: Run test
         uses: canonical/inference-snaps-dev/.github/actions/agentic-test@v2
         with:
-          # TODO: Replace with the snap name.
-          snap-name: <snap-name>
+              snap-name: nemotron-3-5-bolt
           snap-channel: beta
           create-issues: true
           openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}

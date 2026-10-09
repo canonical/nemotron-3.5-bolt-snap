@@ -11,3 +11,6 @@ stage/
 # Model weight files
 model-weights/
 *.gguf
+
+# Locally downloaded llama.cpp builds
+llamacpp-*.tar.gz

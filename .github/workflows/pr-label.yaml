@@ -46,8 +46,7 @@ jobs:
             "expected-tps": 9.4
           }
         ]
-      # TODO: Replace with the snap name.
-      snap-name: <snap-name>
+      snap-name: nemotron-3-5-bolt
       testflinger-client-id: ${{ vars.TESTFLINGER_CLIENT_ID }}
     secrets:
       store-credentials: ${{ secrets.STORE_LOGIN_PR }}
