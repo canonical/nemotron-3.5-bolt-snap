@@ -33,5 +33,4 @@ ln -s /var/lib/snapd/hostfs/usr/lib/wsl/drivers $SNAP_COMMON/usr/lib/wsl/drivers
 #
 # Auto select an engine
 #
-# There is no cpu engine, so fall back to nvidia-gpu when hardware information is unavailable.
-modelctl use-engine --auto --assume-yes --components --fallback=nvidia-gpu
+modelctl use-engine --auto --assume-yes --components --fallback=cpu

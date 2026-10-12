@@ -11,9 +11,10 @@ description: |
 
   The snap includes the following hardware-optimized inference engines:
 
+  * cpu: Optimized for x64 and ARM (armv8, armv9) CPUs
   * nvidia-gpu: CUDA-enabled GPU acceleration
 
-  An NVIDIA GPU is required.
+  The most suitable engine is automatically selected based on the available hardware.
 
   **Install:**
 
@@ -178,6 +179,20 @@ parts:
       # Exclude everything not explicitly organized
       - -*
 
+  llamacpp:
+    plugin: dump
+    # Pre-downloaded from the private canonical/llama.cpp-builds-staging repo (release eris-1205f11).
+    # Switch back to the release URLs once they are publicly accessible.
+    source:
+      - on amd64: llamacpp-amd64.tar.gz
+      - on arm64: llamacpp-arm64.tar.gz
+    source-type: tar
+    stage-packages:
+      - libgomp1
+    organize:
+      "licenses": usr/share/doc/llama.cpp # Add licenses to the snap
+      "*": (component/llamacpp)
+
   llamacpp-cuda:
     plugin: dump
     # Pre-downloaded from the private canonical/llama.cpp-builds-staging repo (release eris-1205f11).
@@ -222,6 +237,11 @@ components:
     type: standard
     summary: Nemotron 3.5 Bolt DSpark draft model W4A16 GGUF
     description: Draft model weights for speculative decoding with Nemotron 3.5 Bolt 74B A9B in GGUF format
+
+  llamacpp:
+    type: standard
+    summary: llama.cpp using default CPU instruction sets
+    description: LLM inference in C/C++
 
   llamacpp-cuda:
     type: standard
