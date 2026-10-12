@@ -169,6 +169,7 @@ parts:
       cp -rf --archive --link --no-dereference ${CRAFT_PART_SRC}/* ${CRAFT_PART_INSTALL}
     organize:
       "nemotron-3-5-bolt-iq2-xxs-gguf/*": (component/nemotron-3-5-bolt-iq2-xxs-gguf)
+      "nemotron-3-5-bolt-dspark-draft-gguf/*": (component/nemotron-3-5-bolt-dspark-draft-gguf)
     prime:
       # Exclude everything not explicitly organized
       - -*
@@ -204,6 +205,11 @@ components:
     type: standard
     summary: Nemotron 3.5 Bolt 74B A9B IQ2_XXS GGUF
     description: Model weights for Nemotron 3.5 Bolt 74B A9B in GGUF format, split into 5 shards
+
+  nemotron-3-5-bolt-dspark-draft-gguf:
+    type: standard
+    summary: Nemotron 3.5 Bolt DSpark draft model W4A16 GGUF
+    description: Draft model weights for speculative decoding with Nemotron 3.5 Bolt 74B A9B in GGUF format
 
   llamacpp-cuda:
     type: standard

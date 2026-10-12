@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: all help init build install upload smoke-test install-deps init-submodules download-models download-model-iq2-xxs
+.PHONY: all help init build install upload smoke-test install-deps init-submodules download-models download-model-iq2-xxs download-model-dspark-draft
 
 # Always run `hf` via pipx to avoid relying on local `hf` installations.
 hf := pipx run --spec "huggingface_hub[cli]" hf
@@ -57,14 +57,22 @@ init-submodules:
 	fi
 
 # The model weights are not publicly downloadable yet.
-# Place the shards in model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/ before building.
+# Place the shards in model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/
+# and the draft model in model-weights/nemotron-3-5-bolt-dspark-draft-gguf/ before building.
 # TODO: Once published, replace the check with:
 #   $(hf) download <org>/<repo> <model-name> --local-dir model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/
-download-models: download-model-iq2-xxs
+download-models: download-model-iq2-xxs download-model-dspark-draft
 
 download-model-iq2-xxs:
 	@echo "Checking local Nemotron 3.5 Bolt IQ2_XXS model weights..."
 	@ls model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/*-00001-of-00005.gguf >/dev/null 2>&1 || { \
 		echo "Missing shards: place them in model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/"; \
+		exit 1; \
+	}
+
+download-model-dspark-draft:
+	@echo "Checking local Nemotron 3.5 Bolt DSpark draft model weights..."
+	@ls model-weights/nemotron-3-5-bolt-dspark-draft-gguf/quantized_dspark_n35_bolt_w4a16.gguf >/dev/null 2>&1 || { \
+		echo "Missing draft model: place it in model-weights/nemotron-3-5-bolt-dspark-draft-gguf/"; \
 		exit 1; \
 	}

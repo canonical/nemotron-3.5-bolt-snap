@@ -1,0 +1,24 @@
+name: nemotron-3-5-bolt-iq2-xxs-dspark
+format: GGUF
+quantization: IQ2_XXS
+disk-size: 25G
+
+description: |
+  Nemotron-3.5-Bolt-74B-A9B IQ2_XXS with a DSpark draft model (W4A16) for speculative decoding.
+  The draft model proposes tokens that the main model verifies in a single batch, which speeds up
+  generation when the main model fits in GPU memory. On GPUs that only hold part of the main model,
+  it can be slower than the model without a draft.
+
+capabilities:
+  - text
+
+components:
+  - nemotron-3-5-bolt-iq2-xxs-gguf
+  - nemotron-3-5-bolt-dspark-draft-gguf
+
+environment:
+  - MODEL_FILE=$SNAP_COMPONENTS/nemotron-3-5-bolt-iq2-xxs-gguf/nemotron-3-5-bolt-iq2-xxs-00001-of-00005.gguf
+
+  # Speculative decoding
+  - SPEC_TYPE=dspark
+  - DRAFT_MODEL_FILE=$SNAP_COMPONENTS/nemotron-3-5-bolt-dspark-draft-gguf/quantized_dspark_n35_bolt_w4a16.gguf

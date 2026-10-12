@@ -17,6 +17,7 @@ model:
   default: nemotron-3-5-bolt-iq2-xxs
   options:
     - nemotron-3-5-bolt-iq2-xxs
+    - nemotron-3-5-bolt-iq2-xxs-dspark
 
 configurations:
   sleep-idle-seconds: 600
