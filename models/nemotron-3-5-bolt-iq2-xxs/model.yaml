@@ -12,7 +12,26 @@ capabilities:
   - text
 
 components:
-  - nemotron-3-5-bolt-iq2-xxs-gguf
+  - model-74b-a9b-iq2-xxs-1-of-5
+  - model-74b-a9b-iq2-xxs-2-of-5
+  - model-74b-a9b-iq2-xxs-3-of-5
+  - model-74b-a9b-iq2-xxs-4-of-5
+  - model-74b-a9b-iq2-xxs-5-of-5
 
 environment:
-  - MODEL_FILE=$SNAP_COMPONENTS/nemotron-3-5-bolt-iq2-xxs-gguf/nemotron-3-5-bolt-iq2-xxs-00001-of-00005.gguf
+  # The model is split into 5 shards, each in its own component to stay below the component size limit.
+  # llama.cpp expects all shards in the same directory, so the layout symlinks them into MODELS_DIR.
+  - MODELS_DIR=/tmp/nemotron-3-5-bolt-iq2-xxs-shards
+  - MODEL_FILE=$MODELS_DIR/nemotron-3-5-bolt-iq2-xxs-00001-of-00005.gguf
+
+layout:
+  $MODELS_DIR/nemotron-3-5-bolt-iq2-xxs-00001-of-00005.gguf:
+    symlink: $SNAP_COMPONENTS/model-74b-a9b-iq2-xxs-1-of-5/nemotron-3-5-bolt-iq2-xxs-00001-of-00005.gguf
+  $MODELS_DIR/nemotron-3-5-bolt-iq2-xxs-00002-of-00005.gguf:
+    symlink: $SNAP_COMPONENTS/model-74b-a9b-iq2-xxs-2-of-5/nemotron-3-5-bolt-iq2-xxs-00002-of-00005.gguf
+  $MODELS_DIR/nemotron-3-5-bolt-iq2-xxs-00003-of-00005.gguf:
+    symlink: $SNAP_COMPONENTS/model-74b-a9b-iq2-xxs-3-of-5/nemotron-3-5-bolt-iq2-xxs-00003-of-00005.gguf
+  $MODELS_DIR/nemotron-3-5-bolt-iq2-xxs-00004-of-00005.gguf:
+    symlink: $SNAP_COMPONENTS/model-74b-a9b-iq2-xxs-4-of-5/nemotron-3-5-bolt-iq2-xxs-00004-of-00005.gguf
+  $MODELS_DIR/nemotron-3-5-bolt-iq2-xxs-00005-of-00005.gguf:
+    symlink: $SNAP_COMPONENTS/model-74b-a9b-iq2-xxs-5-of-5/nemotron-3-5-bolt-iq2-xxs-00005-of-00005.gguf
