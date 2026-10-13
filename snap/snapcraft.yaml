@@ -181,8 +181,8 @@ parts:
 
   llamacpp:
     plugin: dump
-    # Pre-downloaded from the private canonical/llama.cpp-builds-staging repo (release eris-1205f11).
-    # Switch back to the release URLs once they are publicly accessible.
+    # Pre-downloaded from the private canonical/llama.cpp-builds-staging repo (release eris-8b8cdf9).
+    # TODO: Switch back to the release URLs once they are publicly accessible.
     source:
       - on amd64: llamacpp-amd64.tar.gz
       - on arm64: llamacpp-arm64.tar.gz
@@ -195,8 +195,8 @@ parts:
 
   llamacpp-cuda:
     plugin: dump
-    # Pre-downloaded from the private canonical/llama.cpp-builds-staging repo (release eris-1205f11).
-    # Switch back to the release URLs once they are publicly accessible.
+    # Pre-downloaded from the private canonical/llama.cpp-builds-staging repo (release eris-8b8cdf9).
+    # TODO: Switch back to the release URLs once they are publicly accessible.
     source:
       - on amd64: llamacpp-amd64+cuda12.tar.gz
       - on arm64: llamacpp-arm64+cuda12.tar.gz
