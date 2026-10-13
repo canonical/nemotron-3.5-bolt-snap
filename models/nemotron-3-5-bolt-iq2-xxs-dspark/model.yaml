@@ -7,10 +7,11 @@ description: |
   it can be slower than the model without a draft.
 quantization: IQ2_XXS
 
-disk-size: 25G
+disk-size: 27G
 
 capabilities:
   - text
+  - vision
 
 components:
   - model-74b-a9b-iq2-xxs-1-of-5
@@ -18,11 +19,13 @@ components:
   - model-74b-a9b-iq2-xxs-3-of-5
   - model-74b-a9b-iq2-xxs-4-of-5
   - model-74b-a9b-iq2-xxs-5-of-5
+  - mmproj-74b-a9b-bf16-gguf
   - draft-dspark-w4a16
 
 environment:
   - MODELS_DIR=/tmp/nemotron-3-5-bolt-iq2-xxs-shards
   - MODEL_FILE=$MODELS_DIR/nemotron-3-5-bolt-iq2-xxs-00001-of-00005.gguf
+  - MMPROJ_FILE=$SNAP_COMPONENTS/mmproj-74b-a9b-bf16-gguf/mmproj-bf16.gguf
 
   # Speculative decoding
   - SPEC_TYPE=dspark

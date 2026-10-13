@@ -6,10 +6,11 @@ description: |
   the Mamba layers are kept in NVFP4 and the LM head is in Q8_0.
 quantization: IQ2_XXS
 
-disk-size: 24G
+disk-size: 26G
 
 capabilities:
   - text
+  - vision
 
 components:
   - model-74b-a9b-iq2-xxs-1-of-5
@@ -17,12 +18,14 @@ components:
   - model-74b-a9b-iq2-xxs-3-of-5
   - model-74b-a9b-iq2-xxs-4-of-5
   - model-74b-a9b-iq2-xxs-5-of-5
+  - mmproj-74b-a9b-bf16-gguf
 
 environment:
   # The model is split into 5 shards, each in its own component to stay below the component size limit.
   # llama.cpp expects all shards in the same directory, so the layout symlinks them into MODELS_DIR.
   - MODELS_DIR=/tmp/nemotron-3-5-bolt-iq2-xxs-shards
   - MODEL_FILE=$MODELS_DIR/nemotron-3-5-bolt-iq2-xxs-00001-of-00005.gguf
+  - MMPROJ_FILE=$SNAP_COMPONENTS/mmproj-74b-a9b-bf16-gguf/mmproj-bf16.gguf
 
 layout:
   $MODELS_DIR/nemotron-3-5-bolt-iq2-xxs-00001-of-00005.gguf:
