@@ -65,10 +65,10 @@ download-models: download-model-iq2-xxs download-model-dspark-draft
 
 download-model-iq2-xxs:
 	@echo "Checking local Nemotron 3.5 Bolt IQ2_XXS model weights..."
-	@ls model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/*-00001-of-00005.gguf >/dev/null 2>&1 || { \
-		echo "Missing shards: place them in model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/"; \
-		exit 1; \
-	}
+	@for shard in 00001 00002 00003 00004 00005; do \
+		file="model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/nemotron-3-5-bolt-iq2-xxs-$$shard-of-00005.gguf"; \
+		test -f "$$file" || { echo "Missing shard: $$file"; exit 1; }; \
+	done
 
 download-model-dspark-draft:
 	@echo "Checking local Nemotron 3.5 Bolt DSpark draft model weights..."
