@@ -1,5 +1,0 @@
-#!/bin/bash -eu
-
-# run by the engine's server script before starting the server.
-# User overrides (`set speculative.draft-max=...`) still take precedence.
-modelctl set --engine speculative.draft-max=3 speculative.draft-min=0

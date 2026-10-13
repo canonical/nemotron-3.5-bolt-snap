@@ -2,14 +2,16 @@
 
 model_name=$("$SNAP_NAME" model --format=json | jq -r '.name')
 
-if [ -x "$SNAP/models/$model_name/init" ]; then
-  "$SNAP/models/$model_name/init"
-fi
-
 port="$(modelctl get http.port)"
 host="$(modelctl get http.host)"
 sleep_idle_seconds="$(modelctl get sleep-idle-seconds)"
 min_context_size="$(modelctl get min-context-size)"
+
+extra_args=()
+verbose="$(modelctl get verbose)"
+if [ "${verbose}" = "true" ]; then
+  extra_args+=(--verbose)
+fi
 
 mmproj_args=()
 if [ -n "${MMPROJ_FILE:-}" ]; then
@@ -22,8 +24,10 @@ fail() {
 }
 
 # Speculative decoding, enabled by models that set SPEC_TYPE (e.g. dspark).
-spec_args=()
 if [ -n "${SPEC_TYPE:-}" ]; then
+  # Engine defaults. User overrides (`set speculative.draft-max=...`) still take precedence.
+  modelctl set --engine speculative.draft-max=3 speculative.draft-min=0
+
   draft_max="$(modelctl get speculative.draft-max)"
   if ! [[ "$draft_max" =~ ^[0-9]+$ ]] || (( 10#$draft_max < 1 )); then
     fail "speculative.draft-max must be an integer >= 1: $draft_max"
@@ -36,7 +40,7 @@ if [ -n "${SPEC_TYPE:-}" ]; then
   fi
   draft_min=$((10#$draft_min))
 
-  spec_args=(
+  extra_args+=(
     --spec-type "draft-$SPEC_TYPE"
     --spec-draft-n-max "$draft_max"
     --spec-draft-n-min "$draft_min"
@@ -44,8 +48,10 @@ if [ -n "${SPEC_TYPE:-}" ]; then
 
   # DRAFT_MODEL_FILE is only set by methods that use a separate draft model.
   if [ -n "${DRAFT_MODEL_FILE:-}" ]; then
-    spec_args+=(--model-draft "$DRAFT_MODEL_FILE")
+    extra_args+=(--model-draft "$DRAFT_MODEL_FILE")
   fi
+else
+  snapctl unset config.engine.speculative
 fi
 
 set -x
@@ -54,10 +60,10 @@ exec llama-server \
   --model "$MODEL_FILE" \
   --alias "$model_name" \
   "${mmproj_args[@]}" \
-  "${spec_args[@]}" \
   --port "$port" \
   --host "$host" \
   --no-warmup \
   --sleep-idle-seconds "$sleep_idle_seconds" \
   --fit-ctx "$min_context_size" \
+  "${extra_args[@]}" \
   "$@"

@@ -1,4 +1,0 @@
-#!/bin/bash -eu
-
-# run by the engine's server script before starting the server.
-snapctl unset config.engine.speculative
