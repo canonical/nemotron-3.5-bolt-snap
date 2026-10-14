@@ -22,16 +22,11 @@ jobs:
     with:
       build-runner: |
         [
-          "ubuntu-24.04",
-          "ubuntu-24.04-arm"
+          ["amd64", "large", "noble", "self-hosted"],
+          ["arm64", "large", "noble", "self-hosted"]
         ]
       store-track: latest
       snap-name: nemotron-3-5-bolt
       smoke-test-engine: cpu
-      smoke-test-runner: |
-        [
-          "ubuntu-24.04",
-          "ubuntu-24.04-arm"
-        ]
     secrets:
       store-credentials: ${{ secrets.STORE_LOGIN_MAIN }}
