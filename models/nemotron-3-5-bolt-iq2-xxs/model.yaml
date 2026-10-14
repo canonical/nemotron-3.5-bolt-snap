@@ -11,6 +11,8 @@ disk-size: 26G
 capabilities:
   - text
   - vision
+  - thinking
+  - tools
 
 components:
   - model-74b-a9b-iq2-xxs-1-of-5
