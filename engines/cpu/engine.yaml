@@ -17,10 +17,10 @@ devices:
 runtime: llamacpp
 
 model:
-  default: nemotron-3-5-bolt-iq2-xxs
+  default: nemotron-3.5-bolt-74b-a9b
   options:
-    - nemotron-3-5-bolt-iq2-xxs
-    - nemotron-3-5-bolt-iq2-xxs-dspark
+    - nemotron-3.5-bolt-74b-a9b
+    - nemotron-3.5-bolt-74b-a9b-dspark
 
 configurations:
   sleep-idle-seconds: 600
