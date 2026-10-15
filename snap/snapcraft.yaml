@@ -43,7 +43,7 @@ issues: https://github.com/canonical/inference-snaps/issues
 adopt-info: version
 
 base: core24
-grade: devel
+grade: stable
 confinement: strict
 compression: lzo
 
