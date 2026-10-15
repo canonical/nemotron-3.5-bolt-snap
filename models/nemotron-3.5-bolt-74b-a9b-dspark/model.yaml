@@ -1,0 +1,46 @@
+name: nemotron-3.5-bolt-74b-a9b-dspark
+
+description: |
+  Nemotron-3.5-Bolt-74B-A9B IQ2_XXS with a DSpark draft model (W4A16) for speculative decoding.
+  The draft model proposes tokens that the main model verifies in a single batch, which speeds up
+  generation when the main model fits in GPU memory. On GPUs that only hold part of the main model,
+  it can be slower than the model without a draft.
+quantization: IQ2_XXS
+
+disk-size: 27G
+
+capabilities:
+  - text
+  - vision
+  - thinking
+  - tools
+
+components:
+  - model-74b-a9b-iq2-xxs-1-of-5
+  - model-74b-a9b-iq2-xxs-2-of-5
+  - model-74b-a9b-iq2-xxs-3-of-5
+  - model-74b-a9b-iq2-xxs-4-of-5
+  - model-74b-a9b-iq2-xxs-5-of-5
+  - mmproj-74b-a9b-bf16-gguf
+  - draft-dspark-w4a16
+
+environment:
+  - MODELS_DIR=/tmp/nemotron-3-5-bolt-iq2-xxs-shards
+  - MODEL_FILE=$MODELS_DIR/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00001-of-00005.gguf
+  - MMPROJ_FILE=$SNAP_COMPONENTS/mmproj-74b-a9b-bf16-gguf/mmproj-bf16.gguf
+
+  # Speculative decoding
+  - SPEC_TYPE=dspark
+  - DRAFT_MODEL_FILE=$SNAP_COMPONENTS/draft-dspark-w4a16/quantized_dspark_n35_bolt_w4a16.gguf
+
+layout:
+  $MODELS_DIR/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00001-of-00005.gguf:
+    symlink: $SNAP_COMPONENTS/model-74b-a9b-iq2-xxs-1-of-5/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00001-of-00005.gguf
+  $MODELS_DIR/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00002-of-00005.gguf:
+    symlink: $SNAP_COMPONENTS/model-74b-a9b-iq2-xxs-2-of-5/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00002-of-00005.gguf
+  $MODELS_DIR/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00003-of-00005.gguf:
+    symlink: $SNAP_COMPONENTS/model-74b-a9b-iq2-xxs-3-of-5/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00003-of-00005.gguf
+  $MODELS_DIR/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00004-of-00005.gguf:
+    symlink: $SNAP_COMPONENTS/model-74b-a9b-iq2-xxs-4-of-5/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00004-of-00005.gguf
+  $MODELS_DIR/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00005-of-00005.gguf:
+    symlink: $SNAP_COMPONENTS/model-74b-a9b-iq2-xxs-5-of-5/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00005-of-00005.gguf

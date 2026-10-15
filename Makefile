@@ -1,12 +1,11 @@
 SHELL := /bin/bash
 
-.PHONY: all help init build install upload smoke-test install-deps init-submodules download-models
+.PHONY: all help init build install upload smoke-test install-deps init-submodules download-models download-model-iq2-xxs download-model-dspark-draft download-mmproj
 
 # Always run `hf` via pipx to avoid relying on local `hf` installations.
 hf := pipx run --spec "huggingface_hub[cli]" hf
 
-# TODO: Replace with snap name
-SNAP_NAME ?= gemma4 
+SNAP_NAME ?= nemotron-3-5-bolt
 
 ENGINE ?= cpu
 
@@ -57,10 +56,19 @@ init-submodules:
 		git submodule update --init; \
 	fi
 
-# TODO: Update to match the expected model(s):
-download-models: download-model-E4B-Q4_K_M
+download-models: download-model-iq2-xxs download-model-dspark-draft download-mmproj
 
-# TODO: Update to match the model. Add one target per model.
-download-model-E4B-Q4_K_M:
-	$(hf) download unsloth/gemma-4-E4B-it-GGUF gemma-4-E4B-it-Q4_K_M.gguf \
-		--local-dir model-weights/model-e4b-q4-k-m-gguf/
+download-model-iq2-xxs:
+	@echo "Downloading Nemotron 3.5 Bolt IQ2_XXS model weights..."
+	$(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB --include "Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-*-of-00005.gguf" \
+		--local-dir model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/
+
+download-model-dspark-draft:
+	@echo "Downloading Nemotron 3.5 Bolt DSpark draft model weights..."
+	$(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB quantized_dspark_n35_bolt_w4a16.gguf \
+		--local-dir model-weights/nemotron-3-5-bolt-dspark-draft-gguf/
+
+download-mmproj:
+	@echo "Downloading Nemotron 3.5 Bolt mmproj weights..."
+	$(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB mmproj-bf16.gguf \
+		--local-dir model-weights/mmproj-74b-a9b-bf16-gguf/

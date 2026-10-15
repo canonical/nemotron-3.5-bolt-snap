@@ -1,0 +1,69 @@
+#!/bin/bash -eu
+
+model_name=$("$SNAP_NAME" model --format=json | jq -r '.name')
+
+port="$(modelctl get http.port)"
+host="$(modelctl get http.host)"
+sleep_idle_seconds="$(modelctl get sleep-idle-seconds)"
+min_context_size="$(modelctl get min-context-size)"
+
+extra_args=()
+verbose="$(modelctl get verbose)"
+if [ "${verbose}" = "true" ]; then
+  extra_args+=(--verbose)
+fi
+
+mmproj_args=()
+if [ -n "${MMPROJ_FILE:-}" ]; then
+  mmproj_args=(--mmproj "$MMPROJ_FILE")
+fi
+
+fail() {
+  echo "Error: $*" >&2
+  exit 1
+}
+
+# Speculative decoding, enabled by models that set SPEC_TYPE (e.g. dspark).
+if [ -n "${SPEC_TYPE:-}" ]; then
+  # Engine defaults. User overrides (`set speculative.draft-max=...`) still take precedence.
+  modelctl set --engine speculative.draft-max=3 speculative.draft-min=0
+
+  draft_max="$(modelctl get speculative.draft-max)"
+  if ! [[ "$draft_max" =~ ^[0-9]+$ ]] || (( 10#$draft_max < 1 )); then
+    fail "speculative.draft-max must be an integer >= 1: $draft_max"
+  fi
+  draft_max=$((10#$draft_max))
+
+  draft_min="$(modelctl get speculative.draft-min)"
+  if ! [[ "$draft_min" =~ ^[0-9]+$ ]] || (( 10#$draft_min > draft_max )); then
+    fail "speculative.draft-min must be an integer between 0 and speculative.draft-max ($draft_max): $draft_min"
+  fi
+  draft_min=$((10#$draft_min))
+
+  extra_args+=(
+    --spec-type "draft-$SPEC_TYPE"
+    --spec-draft-n-max "$draft_max"
+    --spec-draft-n-min "$draft_min"
+  )
+
+  # DRAFT_MODEL_FILE is only set by methods that use a separate draft model.
+  if [ -n "${DRAFT_MODEL_FILE:-}" ]; then
+    extra_args+=(--model-draft "$DRAFT_MODEL_FILE")
+  fi
+else
+  snapctl unset config.engine.speculative
+fi
+
+set -x
+# Adding --no-warmup to skip the model warmup phase during server startup in order to reduce resource usage if not needed.
+exec llama-server \
+  --model "$MODEL_FILE" \
+  --alias "$model_name" \
+  "${mmproj_args[@]}" \
+  --port "$port" \
+  --host "$host" \
+  --no-warmup \
+  --sleep-idle-seconds "$sleep_idle_seconds" \
+  --fit-ctx "$min_context_size" \
+  "${extra_args[@]}" \
+  "$@"

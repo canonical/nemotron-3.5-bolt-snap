@@ -1,0 +1,292 @@
+name: nemotron-3-5-bolt
+title: Nemotron 3.5 Bolt
+summary: Local AI with Nemotron 3.5 Bolt inference snap
+description: |
+  Nemotron 3.5 Bolt 74B A9B is a large language model from NVIDIA built with a hybrid
+  Mixture-of-Experts (MoE) architecture, compressed from Nemotron 3.5 Super.
+  The routed and shared experts, which make up most of the model weights, are quantized
+  to IQ2_XXS (2.06 bits), the Mamba layers are kept in NVFP4 and the LM head is in Q8_0.
+
+  Use this snap to quickly install an optimized environment for local inference with Nemotron 3.5 Bolt.
+
+  The snap includes the following hardware-optimized inference engines:
+
+  * cpu: Optimized for x64 and ARM (armv8, armv9) CPUs
+  * nvidia-gpu: CUDA-enabled GPU acceleration
+
+  The most suitable engine is automatically selected based on the available hardware.
+
+  **Install:**
+
+  `sudo snap install nemotron-3-5-bolt`
+
+  **Run:**
+
+  `nemotron-3-5-bolt`
+
+  Some accelerators require extra drivers to be usable with this snap:
+  https://documentation.ubuntu.com/inference-snaps/how-to/setup/drivers/
+
+  **License:**
+
+  The Nemotron 3.5 Bolt model is provided by NVIDIA Corporation under the OpenMDW-1.1 license:
+  https://openmdw.ai/license/1-1/
+
+  The licenses of all the bundled software can be found after installing the snap at
+  `/snap/nemotron-3-5-bolt/current/usr/share/doc`.
+
+icon: snap/gui/icon-256.png
+website: https://documentation.ubuntu.com/inference-snaps
+source-code: https://github.com/canonical/nemotron-3.5-bolt-snap
+issues: https://github.com/canonical/inference-snaps/issues
+
+adopt-info: version
+
+base: core24
+grade: stable
+confinement: strict
+compression: lzo
+
+assumes:
+  - snapd2.68 # for components support
+
+platforms:
+  amd64:
+  arm64:
+
+slots:
+  provider:
+    interface: content
+    content: inference-provider
+    source:
+      read:
+        - $SNAP_COMMON/share/provider
+plugs:
+  # To allow side-loading models into server (root daemon) from user home directory
+  home:
+    read: all
+
+environment:
+  SNAP_COMPONENTS: /snap/$SNAP_INSTANCE_NAME/components/$SNAP_REVISION
+  ARCH_TRIPLET: $CRAFT_ARCH_TRIPLET_BUILD_FOR
+
+layout:
+  # Under wsl the libraries are expected in /usr/lib/wsl
+  /usr/lib/wsl:
+    bind: $SNAP_COMMON/usr/lib/wsl
+
+hooks:
+  install:
+    plugs: &install-plugs
+      # For hardware detection
+      - hardware-observe
+      - opengl
+  post-refresh:
+    plugs: *install-plugs
+
+parts:
+  version:
+    after: [cli]
+    plugin: nil
+    source: . # To regenerate the git hash on every change
+    build-packages:
+      - jq
+      - git
+    override-pull: |
+      # Do nothing. This significantly reduces build time when sourcing large files.
+    override-build: |
+      set -eo pipefail
+      cli_version=$($CRAFT_STAGE/bin/modelctl version --format=json | jq .cli --raw-output)
+      git_hash=$(git -C "$SNAPCRAFT_PROJECT_DIR" describe --always)
+      craftctl set version="${cli_version#v}+${git_hash}"
+
+  cli:
+    source:
+      - on amd64: https://github.com/canonical/inference-snaps-cli/releases/download/v2.0.0-beta.17/inference-snaps-cli-linux-amd64.tar.xz
+      - on arm64: https://github.com/canonical/inference-snaps-cli/releases/download/v2.0.0-beta.17/inference-snaps-cli-linux-arm64.tar.xz
+    plugin: dump
+    override-build: |
+      # For tab completion
+      ln --symbolic ./modelctl bin/nemotron-3-5-bolt
+
+      craftctl default
+
+  cli-lspci:
+    plugin: nil
+    stage-packages:
+      - pciutils # lspci
+
+  # Used for NVIDIA vRAM and CUDA Capability detection.
+  # Only the binary is included to avoid staging libraries, which should instead be provided by the host through the opengl interface.
+  cli-nvidia-smi:
+    plugin: nil
+    build-packages:
+      - nvidia-utils-580
+    override-build: |
+      mkdir -p $CRAFT_PART_INSTALL/usr/bin
+      cp /usr/bin/nvidia-smi $CRAFT_PART_INSTALL/usr/bin/
+
+      license_dir=$CRAFT_PART_INSTALL/usr/share/doc/nvidia-utils-580
+      mkdir -p $license_dir
+      cp /usr/share/doc/nvidia-utils-580/copyright $license_dir/
+
+  webui:
+    plugin: dump
+    source: https://github.com/canonical/inference-snaps-webui/releases/download/v1.1.0/inference-snaps-webui.tar.xz
+    organize:
+      "*": webui/
+
+  engines:
+    source: engines
+    plugin: dump
+    organize:
+      "*": engines/
+
+  models:
+    source: models
+    plugin: dump
+    organize:
+      "*": models/
+
+  runtimes:
+    source: runtimes
+    plugin: dump
+    organize:
+      "*": runtimes/
+
+  scripts:
+    source: scripts
+    plugin: dump
+    stage-packages:
+      - jq
+    organize:
+      "server.sh": bin/
+      "server-webui.sh": bin/
+
+  model-weights:
+    plugin: cmake # an out-of-source plugin to reduce copies on disk
+    source: model-weights
+    override-build:
+      cp -rf --archive --link --no-dereference ${CRAFT_PART_SRC}/* ${CRAFT_PART_INSTALL}
+    organize:
+      "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00001-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-1-of-5)
+      "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00002-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-2-of-5)
+      "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00003-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-3-of-5)
+      "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00004-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-4-of-5)
+      "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00005-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-5-of-5)
+      "nemotron-3-5-bolt-dspark-draft-gguf/*": (component/draft-dspark-w4a16)
+      "mmproj-74b-a9b-bf16-gguf/mmproj-bf16.gguf": (component/mmproj-74b-a9b-bf16-gguf)
+    prime:
+      # Exclude everything not explicitly organized
+      - -*
+
+  llamacpp:
+    plugin: dump
+    source:
+      - on amd64: https://github.com/canonical/llama.cpp-builds/releases/download/b11669/llamacpp-amd64.tar.gz
+      - on arm64: https://github.com/canonical/llama.cpp-builds/releases/download/b11669/llamacpp-arm64.tar.gz
+    override-build: |
+      # Move license files to be included in the snap, not the component
+      mkdir -p $CRAFT_PRIME/usr/share/doc/
+      mv licenses $CRAFT_PRIME/usr/share/doc/llama.cpp
+
+      craftctl default
+    stage-packages:
+      - libgomp1
+    organize:
+      "*": (component/llamacpp)
+
+  llamacpp-cuda:
+    plugin: dump
+    source:
+      - on amd64: https://github.com/canonical/llama.cpp-builds/releases/download/b11669/llamacpp-amd64+cuda12.9.tar.gz
+      - on arm64: https://github.com/canonical/llama.cpp-builds/releases/download/b11669/llamacpp-arm64+cuda12.9.tar.gz
+    override-build: |
+      # Move license files to be included in the snap, not the component
+      mkdir -p $CRAFT_PRIME/usr/share/doc/
+      mv licenses $CRAFT_PRIME/usr/share/doc/llama.cpp+cuda
+
+      craftctl default
+    stage-packages:
+      - libgomp1
+    organize:
+      "*": (component/llamacpp-cuda)
+
+  notice:
+    plugin: nil
+    source: NOTICE
+    source-type: file
+    override-build: |
+      license_dir=$CRAFT_PART_INSTALL/usr/share/doc
+      mkdir -p $license_dir
+      cp NOTICE $license_dir/
+      # Add license files referenced in NOTICE
+      cp $SNAPCRAFT_PROJECT_DIR/LICENSE $license_dir/
+      cp $SNAPCRAFT_PROJECT_DIR/LICENSE-Nemotron-3.5-Bolt $license_dir/
+
+components:
+  model-74b-a9b-iq2-xxs-1-of-5: &model-74b-a9b-iq2-xxs
+    type: standard
+    summary: Nemotron 3.5 Bolt 74B A9B IQ2_XXS GGUF
+    description: Model weights for Nemotron 3.5 Bolt 74B A9B in GGUF format, split into 5 parts
+  model-74b-a9b-iq2-xxs-2-of-5:
+    << : *model-74b-a9b-iq2-xxs
+  model-74b-a9b-iq2-xxs-3-of-5:
+    << : *model-74b-a9b-iq2-xxs
+  model-74b-a9b-iq2-xxs-4-of-5:
+    << : *model-74b-a9b-iq2-xxs
+  model-74b-a9b-iq2-xxs-5-of-5:
+    << : *model-74b-a9b-iq2-xxs
+
+  mmproj-74b-a9b-bf16-gguf:
+    type: standard
+    summary: Nemotron 3.5 Bolt 74B A9B BF16 mmproj GGUF
+    description: Multimodal projector for image input with Nemotron 3.5 Bolt 74B A9B in GGUF format
+
+  draft-dspark-w4a16:
+    type: standard
+    summary: Nemotron 3.5 Bolt DSpark draft model W4A16 GGUF
+    description: Draft model weights for speculative decoding with Nemotron 3.5 Bolt 74B A9B in GGUF format
+
+  llamacpp:
+    type: standard
+    summary: llama.cpp using default CPU instruction sets
+    description: LLM inference in C/C++
+
+  llamacpp-cuda:
+    type: standard
+    summary: llama.cpp with CUDA backend
+    description: LLM inference in C/C++
+
+apps:
+  nemotron-3-5-bolt:
+    command: bin/modelctl
+    completer: bin/snap-completer.bash
+    plugs:
+      - hardware-observe
+      - opengl
+      - network
+      - desktop
+    environment:
+      ADDITIONAL_FEATURES: chat, webui
+
+  server:
+    command: bin/server.sh
+    daemon: simple
+    plugs:
+      - network-bind
+      - hardware-observe
+      - opengl
+      - home
+
+  server-webui:
+    command: bin/server-webui.sh
+    daemon: simple
+    plugs:
+      - network-bind
+
+lint:
+  ignore:
+    - metadata:
+      - license
+      - contact
