@@ -5,6 +5,7 @@ description: |
   The draft model proposes tokens that the main model verifies in a single batch, which speeds up
   generation when the main model fits in GPU memory. On GPUs that only hold part of the main model,
   it can be slower than the model without a draft.
+model-card-url: https://huggingface.co/inference-snaps/Nemotron-3.5-Bolt-5GB
 quantization: IQ2_XXS
 
 disk-size: 27G
