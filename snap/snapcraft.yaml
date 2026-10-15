@@ -29,8 +29,8 @@ description: |
 
   **License:**
 
-  The Nemotron 3.5 Bolt model is provided by NVIDIA Corporation under the NVIDIA Open Model License:
-  https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/
+  The Nemotron 3.5 Bolt model is provided by NVIDIA Corporation under the OpenMDW-1.1 license:
+  https://openmdw.ai/license/1-1/
 
   The licenses of all the bundled software can be found after installing the snap at
   `/snap/nemotron-3-5-bolt/current/usr/share/doc`.
@@ -218,7 +218,7 @@ parts:
       cp NOTICE $license_dir/
       # Add license files referenced in NOTICE
       cp $SNAPCRAFT_PROJECT_DIR/LICENSE $license_dir/
-      cp $SNAPCRAFT_PROJECT_DIR/nvidia-open-model-license-agreements-24-10-2025.pdf $license_dir/
+      cp $SNAPCRAFT_PROJECT_DIR/LICENSE-Nemotron-3.5-Bolt $license_dir/
 
 components:
   model-74b-a9b-iq2-xxs-1-of-5: &model-74b-a9b-iq2-xxs
