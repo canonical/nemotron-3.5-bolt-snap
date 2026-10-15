@@ -28,5 +28,10 @@ jobs:
       store-track: latest
       snap-name: nemotron-3-5-bolt
       smoke-test-engine: cpu
+      smoke-test-runner: |
+        [
+          ["amd64", "large", "noble", "self-hosted"],
+          ["arm64", "xlarge", "noble", "self-hosted"]
+        ]
     secrets:
       store-credentials: ${{ secrets.STORE_LOGIN_MAIN }}
