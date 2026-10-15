@@ -169,11 +169,11 @@ parts:
     override-build:
       cp -rf --archive --link --no-dereference ${CRAFT_PART_SRC}/* ${CRAFT_PART_INSTALL}
     organize:
-      "nemotron-3-5-bolt-iq2-xxs-gguf/nemotron-3-5-bolt-iq2-xxs-00001-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-1-of-5)
-      "nemotron-3-5-bolt-iq2-xxs-gguf/nemotron-3-5-bolt-iq2-xxs-00002-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-2-of-5)
-      "nemotron-3-5-bolt-iq2-xxs-gguf/nemotron-3-5-bolt-iq2-xxs-00003-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-3-of-5)
-      "nemotron-3-5-bolt-iq2-xxs-gguf/nemotron-3-5-bolt-iq2-xxs-00004-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-4-of-5)
-      "nemotron-3-5-bolt-iq2-xxs-gguf/nemotron-3-5-bolt-iq2-xxs-00005-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-5-of-5)
+      "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00001-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-1-of-5)
+      "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00002-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-2-of-5)
+      "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00003-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-3-of-5)
+      "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00004-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-4-of-5)
+      "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00005-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-5-of-5)
       "nemotron-3-5-bolt-dspark-draft-gguf/*": (component/draft-dspark-w4a16)
       "mmproj-74b-a9b-bf16-gguf/mmproj-bf16.gguf": (component/mmproj-74b-a9b-bf16-gguf)
     prime:

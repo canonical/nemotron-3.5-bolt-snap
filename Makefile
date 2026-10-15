@@ -60,13 +60,13 @@ init-submodules:
 # Place the shards in model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/
 # and the draft model in model-weights/nemotron-3-5-bolt-dspark-draft-gguf/ before building.
 # TODO: Once published, replace the check with:
-#   $(hf) download <org>/<repo> <model-name> --local-dir model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/
+#   $(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB --local-dir model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/
 download-models: download-model-iq2-xxs download-model-dspark-draft download-mmproj
 
 download-model-iq2-xxs:
 	@echo "Checking local Nemotron 3.5 Bolt IQ2_XXS model weights..."
 	@for shard in 00001 00002 00003 00004 00005; do \
-		file="model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/nemotron-3-5-bolt-iq2-xxs-$$shard-of-00005.gguf"; \
+		file="model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-$$shard-of-00005.gguf"; \
 		test -f "$$file" || { echo "Missing shard: $$file"; exit 1; }; \
 	done
 
