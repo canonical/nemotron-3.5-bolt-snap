@@ -56,30 +56,19 @@ init-submodules:
 		git submodule update --init; \
 	fi
 
-# The model weights are not publicly downloadable yet.
-# Place the shards in model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/
-# and the draft model in model-weights/nemotron-3-5-bolt-dspark-draft-gguf/ before building.
-# TODO: Once published, replace the check with:
-#   $(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB --local-dir model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/
 download-models: download-model-iq2-xxs download-model-dspark-draft download-mmproj
 
 download-model-iq2-xxs:
-	@echo "Checking local Nemotron 3.5 Bolt IQ2_XXS model weights..."
-	@for shard in 00001 00002 00003 00004 00005; do \
-		file="model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-$$shard-of-00005.gguf"; \
-		test -f "$$file" || { echo "Missing shard: $$file"; exit 1; }; \
-	done
+	@echo "Downloading Nemotron 3.5 Bolt IQ2_XXS model weights..."
+	$(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB --include "Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-*-of-00005.gguf" \
+		--local-dir model-weights/nemotron-3-5-bolt-iq2-xxs-gguf/
 
 download-model-dspark-draft:
-	@echo "Checking local Nemotron 3.5 Bolt DSpark draft model weights..."
-	@ls model-weights/nemotron-3-5-bolt-dspark-draft-gguf/quantized_dspark_n35_bolt_w4a16.gguf >/dev/null 2>&1 || { \
-		echo "Missing draft model: place it in model-weights/nemotron-3-5-bolt-dspark-draft-gguf/"; \
-		exit 1; \
-	}
+	@echo "Downloading Nemotron 3.5 Bolt DSpark draft model weights..."
+	$(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB quantized_dspark_n35_bolt_w4a16.gguf \
+		--local-dir model-weights/nemotron-3-5-bolt-dspark-draft-gguf/
 
 download-mmproj:
-	@echo "Checking local Nemotron 3.5 Bolt mmproj weights..."
-	@test -f model-weights/mmproj-74b-a9b-bf16-gguf/mmproj-bf16.gguf || { \
-		echo "Missing mmproj: place mmproj-bf16.gguf in model-weights/mmproj-74b-a9b-bf16-gguf/"; \
-		exit 1; \
-	}
+	@echo "Downloading Nemotron 3.5 Bolt mmproj weights..."
+	$(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB mmproj-bf16.gguf \
+		--local-dir model-weights/mmproj-74b-a9b-bf16-gguf/
