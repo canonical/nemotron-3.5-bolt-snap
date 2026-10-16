@@ -1,9 +1,9 @@
 Nemotron 3.5 Bolt snap is provided under multiple licenses as described below.
 
-Nemotron 3.5 Bolt model is provided by NVIDIA Corporation under the NVIDIA Open
-Model License.
-A copy of the NVIDIA Open Model License is included herein and can be found in
-nvidia-open-model-license-agreements-24-10-2025.pdf.
+Nemotron 3.5 Bolt model is provided by NVIDIA Corporation under the
+OpenMDW-1.1 license.
+A copy of the OpenMDW-1.1 license is included herein and can be found in
+LICENSE-Nemotron-3.5-Bolt.
 
 The snap packaging code is licensed separately under the terms specified in the
 LICENSE file.
