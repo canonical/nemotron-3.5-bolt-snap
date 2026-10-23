@@ -2,10 +2,14 @@ name: nemotron-3-5-bolt
 title: Nemotron 3.5 Bolt
 summary: Local AI with Nemotron 3.5 Bolt inference snap
 description: |
-  Nemotron 3.5 Bolt 74B A9B is a large language model from NVIDIA built with a hybrid
-  Mixture-of-Experts (MoE) architecture, compressed from Nemotron 3.5 Super.
-  The routed and shared experts, which make up most of the model weights, are quantized
-  to IQ2_XXS (2.06 bits), the Mamba layers are kept in NVFP4 and the LM head is in Q8_0.
+  Nemotron 3.5 Bolt is a large language model from NVIDIA available in different sizes.
+  
+  The 74B A9B variant is built with a hybrid Mixture-of-Experts (MoE) architecture, 
+  compressed from Nemotron 3.5 Super. The routed and shared experts, which make up most 
+  of the model weights, are quantized to IQ2_XXS (2.06 bits), the Mamba layers are kept 
+  in NVFP4 and the LM head is in Q8_0.
+  
+  The E4B variant is a vision language model trained by NVIDIA from Gemma-4-E4B-it.
 
   Use this snap to quickly install an optimized environment for local inference with Nemotron 3.5 Bolt.
 
@@ -176,6 +180,9 @@ parts:
       "nemotron-3-5-bolt-iq2-xxs-gguf/Nemotron-3.5-Bolt-74B-A9B-IQ2_XXS-00005-of-00005.gguf": (component/model-74b-a9b-iq2-xxs-5-of-5)
       "nemotron-3-5-bolt-dspark-draft-gguf/*": (component/draft-dspark-w4a16)
       "mmproj-74b-a9b-bf16-gguf/mmproj-bf16.gguf": (component/mmproj-74b-a9b-bf16-gguf)
+      "nemotron-3-5-bolt-e4b-q4-k-m-gguf/NVIDIA-Nemotron-3.5-Bolt-E4B-Q4_K_M-00001-of-00002.gguf": (component/model-e4b-q4-k-m-1-of-2)
+      "nemotron-3-5-bolt-e4b-q4-k-m-gguf/NVIDIA-Nemotron-3.5-Bolt-E4B-Q4_K_M-00002-of-00002.gguf": (component/model-e4b-q4-k-m-2-of-2)
+      "mmproj-e4b-q8-0/NVIDIA-Nemotron-3.5-Bolt-E4B-mmproj-Q8_0.gguf": (component/mmproj-e4b-q8-0)
     prime:
       # Exclude everything not explicitly organized
       - -*
@@ -247,6 +254,19 @@ components:
     type: standard
     summary: Nemotron 3.5 Bolt DSpark draft model W4A16 GGUF
     description: Draft model weights for speculative decoding with Nemotron 3.5 Bolt 74B A9B in GGUF format
+
+  model-e4b-q4-k-m-1-of-2: &model-e4b
+    type: standard
+    summary: Nemotron 3.5 Bolt E4B Q4_K_M
+    description: Model weights for Nemotron 3.5 Bolt E4B in GGUF format, split into two parts
+  
+  model-e4b-q4-k-m-2-of-2: 
+    << : *model-e4b
+
+  mmproj-e4b-q8-0:
+    type: standard
+    summary: Nemotron 3.5 Bolt E4B Q8_0 mmproj GGUF
+    description: Multimodal projector for image input with Nemotron 3.5 Bolt E4B in GGUF format
 
   llamacpp:
     type: standard

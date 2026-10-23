@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: all help init build install upload smoke-test install-deps init-submodules download-models download-model-iq2-xxs download-model-dspark-draft download-mmproj
+.PHONY: all help init build install upload smoke-test install-deps init-submodules download-models download-model-iq2-xxs download-model-dspark-draft download-mmproj download-model-e4b
 
 # Always run `hf` via pipx to avoid relying on local `hf` installations.
 hf := pipx run --spec "huggingface_hub[cli]" hf
@@ -56,7 +56,7 @@ init-submodules:
 		git submodule update --init; \
 	fi
 
-download-models: download-model-iq2-xxs download-model-dspark-draft download-mmproj
+download-models: download-model-iq2-xxs download-model-dspark-draft download-mmproj download-model-e4b 
 
 download-model-iq2-xxs:
 	@echo "Downloading Nemotron 3.5 Bolt IQ2_XXS model weights..."
@@ -72,3 +72,14 @@ download-mmproj:
 	@echo "Downloading Nemotron 3.5 Bolt mmproj weights..."
 	$(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB mmproj-bf16.gguf \
 		--local-dir model-weights/mmproj-74b-a9b-bf16-gguf/
+
+download-model-e4b:
+	@echo "Downloading Nemotron 3.5 Bolt E4B model weights..."
+	$(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB NVIDIA-Nemotron-3.5-Bolt-E4B-Q4_K_M-00001-of-00002.gguf \
+		--local-dir model-weights/nemotron-3-5-bolt-e4b-q4-k-m-gguf/
+	$(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB NVIDIA-Nemotron-3.5-Bolt-E4B-Q4_K_M-00002-of-00002.gguf \
+		--local-dir model-weights/nemotron-3-5-bolt-e4b-q4-k-m-gguf/
+
+	@echo "Downloading Nemotron 3.5 Bolt E4B mmproj..."
+	$(hf) download inference-snaps/Nemotron-3.5-Bolt-5GB NVIDIA-Nemotron-3.5-Bolt-E4B-mmproj-Q8_0.gguf \
+		--local-dir model-weights/mmproj-e4b-q8-0/

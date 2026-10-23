@@ -17,8 +17,9 @@ devices:
 runtime: llamacpp
 
 model:
-  default: nemotron-3.5-bolt-74b-a9b
+  default: nemotron-3.5-bolt-e4b
   options:
+    - nemotron-3.5-bolt-e4b
     - nemotron-3.5-bolt-74b-a9b
     - nemotron-3.5-bolt-74b-a9b-dspark
 
