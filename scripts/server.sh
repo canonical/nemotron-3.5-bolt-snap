@@ -4,9 +4,10 @@ set -euo pipefail
 
 # Workaround for https://github.com/canonical/inference-snaps/issues/398
 read -r uptime _ < /proc/uptime
-if (( ${uptime%%.*} < 30 )); then
+uptime_seconds=${uptime%%.*}
+if (( uptime_seconds < 30 )); then
     echo "System has been up for less than 30 seconds. Waiting for startup to complete..."
-    sleep 30
+    sleep $((30 - uptime_seconds))
     exit 1
 fi
 
