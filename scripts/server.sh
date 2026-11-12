@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-# Workaround for https://github.com/canonical/inference-snaps/issues/398
 read -r uptime _ < /proc/uptime
 uptime_seconds=${uptime%%.*}
 if (( uptime_seconds < 30 )); then
